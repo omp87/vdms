@@ -47,7 +47,7 @@ RUN cd /grpc/third_party/protobuf/java/core/target && echo "cp $(ls | grep proto
 
 # Valijson
 RUN cd /valijson && cp -r include/* /usr/local/include/ 
-RUN git clone https://github.com/omp87/vdms.git && cd vdms && git checkout distributed_vdms && git submodule update --init --recursive
+RUN git clone https://github.com/omp87/vdms.git && cd vdms && git checkout distributed_vdms && git submodule update --init --recursive && git submodule update --remote --merge
 RUN cd /vdms && mkdir build && cd build && cmake .. && make -j16 && cd / rm -rf valijson && rm -rf faiss && \
 rm -rf grpc && rm -rf libpng  && rm -rf opencv && rm -rf swig && rm -rf CMake
 

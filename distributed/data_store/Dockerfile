@@ -1,5 +1,6 @@
 # Pull base image.
 FROM ubuntu:20.04
+ARG MAVEN_OPTS
 
 #Install Packages
 RUN apt-get update && apt-get -y install software-properties-common && add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main" && apt-get -y install g++ git libssl-dev libc-ares-dev apt-transport-https ca-certificates curl gnupg-agent software-properties-common cmake python3-pip build-essential autoconf automake libtool g++ unzip bzip2 libarchive-tools cmake git pkg-config python python-dev wget libbz2-dev libssl-dev liblz4-dev mpich libjsoncpp-dev flex javacc bison openjdk-11-jdk-headless libleveldb-dev libsnappy-dev libhdf5-serial-dev libatlas-base-dev libboost-all-dev libgflags-dev libgoogle-glog-dev liblmdb-dev libjpeg8-dev libtiff5-dev libjasper-dev libgtk-3-dev libopenmpi-dev libgtest-dev ed libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libdc1394-22-dev libopenblas-dev && pip3 install numpy
@@ -38,7 +39,9 @@ RUN cd / && wget https://github.com/TileDB-Inc/TileDB/archive/1.3.1.tar.gz && \
     rm -rf /TileDB-1.3.1
 
 
-RUN ln -s /grpc/third_party/protobuf/cmake/build/protoc /grpc/third_party/protobuf/src/protoc && apt-get install -y maven && cd /grpc/third_party/protobuf/java/core && mvn package && cp target/protobuf-java-3.13.0.jar /usr/share/java/protobuf.jar && cd / && curl https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/json-simple/json-simple-1.1.1.jar -o /usr/share/java/json-simple-1.1.1.jar && cd / && curl https://mirror.jframeworks.com/apache//commons/codec/binaries/commons-codec-1.15-bin.tar.gz -o /commons-codec-1.15-bin.tar.gz && gunzip /commons-codec-1.15-bin.tar.gz && tar -xvf commons-codec-1.15-bin.tar && cp commons-codec-1.15/commons-codec-1.15.jar /usr/share/java/commons-codec-1.15.jar
+RUN ln -s /grpc/third_party/protobuf/cmake/build/protoc /grpc/third_party/protobuf/src/protoc && apt-get install -y maven && cd /grpc/third_party/protobuf/java/core && mvn package
+
+RUN cd /grpc/third_party/protobuf/java/core/target && echo "cp $(ls | grep protobuf-java | tail -n 1) /usr/share/java/protobuf.jar" > tmp_script && bash ./tmp_script && cd / && curl https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/json-simple/json-simple-1.1.1.jar -o /usr/share/java/json-simple-1.1.1.jar && cd / && curl https://mirror.jframeworks.com/apache//commons/codec/binaries/commons-codec-1.15-bin.tar.gz -o /commons-codec-1.15-bin.tar.gz && gunzip /commons-codec-1.15-bin.tar.gz && tar -xvf commons-codec-1.15-bin.tar && cp commons-codec-1.15/commons-codec-1.15.jar /usr/share/java/commons-codec-1.15.jar
 
 
 

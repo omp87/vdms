@@ -59,6 +59,7 @@ class ClientServiceThread extends Thread
         DataInputStream in = null; 
         DataOutputStream out = null;
         byte[] readSizeArray = new byte[4];
+        byte[] messageIdArray = new byte[4];
         byte[] threadIdArray = new byte[4];
         
         int bytesRead;
@@ -127,8 +128,8 @@ class ClientServiceThread extends Thread
                     //bust still need to wait for a message to go into response queue before proceeding
                     if(messageId > 0)
                     {
-                        bytesRead = in.read(threadIdArray, 0, 4);
-                        returnedMessageId =  ByteBuffer.wrap(threadIdArray).order(ByteOrder.BIG_ENDIAN).getInt();
+                        bytesRead = in.read(messageIdArray, 0, 4);
+                        returnedMessageId =  ByteBuffer.wrap(messageIdArray).order(ByteOrder.BIG_ENDIAN).getInt();
                         bytesRead = in.read(threadIdArray, 0, 4);
                         returnedThreadId =  ByteBuffer.wrap(threadIdArray).order(ByteOrder.BIG_ENDIAN).getInt();
                         String tmpString = new String(buffer, StandardCharsets.UTF_8);

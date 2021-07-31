@@ -63,6 +63,7 @@ class ClientServiceThread extends Thread
         byte[] threadIdArray = new byte[4];
         
         int bytesRead;
+        int foo;
         int readSize;
         int returnedThreadId;
         int returnedMessageId;
@@ -128,10 +129,9 @@ class ClientServiceThread extends Thread
                     //bust still need to wait for a message to go into response queue before proceeding
                     if(messageId > 0)
                     {
-                        bytesRead = in.read(messageIdArray, 0, 4);
-                        returnedMessageId =  ByteBuffer.wrap(messageIdArray).order(ByteOrder.BIG_ENDIAN).getInt();
-                        bytesRead = in.read(threadIdArray, 0, 4);
-                        returnedThreadId =  ByteBuffer.wrap(threadIdArray).order(ByteOrder.BIG_ENDIAN).getInt();
+                        returnedMessageId =  in.readInt();
+                        returnedThreadId =  in.readInt();
+                        System.out.println(returnedThreadId); //debugging does not work unless this line is present
                         String tmpString = new String(buffer, StandardCharsets.UTF_8);
                         System.out.println(tmpString);
                         newTransaction = new VdmsTransaction(readSizeArray, buffer, returnedThreadId, returnedMessageId);

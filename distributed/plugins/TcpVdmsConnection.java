@@ -83,6 +83,7 @@ class TcpVdmsConnection extends VdmsConnection
         {
             out.writeInt(outMessage.GetMessageId());
             out.writeInt(outMessage.GetThreadId());
+            //System.out.println("write extended " + String.valueOf(outMessage.GetThreadId()));
         }
         catch(IOException e)
         {
@@ -129,14 +130,11 @@ class TcpVdmsConnection extends VdmsConnection
         VdmsTransaction readValue = Read();
         try
         {
-            byte[] messageIdBuffer = new byte[4];
-            in.read(messageIdBuffer, 0, 4);
-            int nMessageId = ByteBuffer.wrap(messageIdBuffer).order(ByteOrder.BIG_ENDIAN).getInt();
-            byte[] threadIdBuffer = new byte[4];
-            in.read(threadIdBuffer, 0, 4);
-            int nThreadId = ByteBuffer.wrap(threadIdBuffer).order(ByteOrder.BIG_ENDIAN).getInt();
+            int nMessageId = in.readInt();
+            int nThreadId = in.readInt();
             readValue.SetMessageId(nMessageId);
             readValue.SetThreadId(nThreadId);
+            //System.out.println("read extended " + String.valueOf(nThreadId));
         }
         catch(IOException e)
         {

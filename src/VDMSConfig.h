@@ -31,7 +31,12 @@
 
 #pragma once
 
+#include <vector>
 #include <string>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+
 #include <jsoncpp/json/value.h>
 
 // Parameters in the JSON config file
@@ -45,6 +50,26 @@
 #define PARAM_DB_BLOBS          "blobs_path"
 #define PARAM_DB_VIDEOS         "videos_path"
 #define PARAM_DB_DESCRIPTORS    "descriptors_path"
+#define PARAM_DB_TMP            "tmp_path"
+
+// Parameters used to determine depth and breadth of directory structure
+//take parameters from command line if they are supplied
+#ifndef DIRECTORIES_PER_LAYER
+   #define DIRECTORIES_PER_LAYER 5
+#endif
+
+#ifndef DIRECTORY_LAYERS
+#define DIRECTORY_LAYERS 3
+#endif
+
+#ifndef CHARS_PER_LAYER_NAME
+#define CHARS_PER_LAYER_NAME 3
+#endif
+
+
+
+
+
 
 #define PARAM_PMGD_NUM_ALLOCATORS   "pmgd_num_allocators"
 #define DEFAULT_PMGD_NUM_ALLOCATORS 1
@@ -74,9 +99,12 @@ namespace VDMS{
         std::string path_blobs;
         std::string path_videos;
         std::string path_descriptors;
+	std::string path_tmp;
 
         VDMSConfig(std::string config_file);
 
+	void expand_directory_layer(std::vector< std::vector<std::string>* > *p_directory_list, int current_layer);
+	void create_directory_layer(std::vector< std::vector<std::string>* > *p_directory_list, std::string base_directory);
         void build_dirs();
         void check_or_create(std::string path);
         int create_dir(std::string path);
@@ -93,6 +121,7 @@ namespace VDMS{
         const std::string& get_path_blobs() {return path_blobs;}
         const std::string& get_path_videos(){return path_videos;}
         const std::string& get_path_descriptors() {return path_descriptors;}
+	const std::string& get_path_tmp() {return path_tmp;}
     };
 
 }; // vdms namespace

@@ -5,23 +5,34 @@ class VdmsTransaction
 {
     byte size[];
     byte buffer[];
-    int id;
+    int messageId;
+    int threadId;
     long timestamp;
+    Boolean emptyTransactionFlag;
 
     
     public VdmsTransaction(byte[] nSize, byte[] nBuffer)
     {
+        emptyTransactionFlag = true;
+        if(nBuffer.length > 0)
+        {
+            emptyTransactionFlag = false;
+        }
         size = nSize;
         buffer = nBuffer;
-        id = -1;
+        messageId = -1;
         timestamp = 0;
     }
-    
     public VdmsTransaction(int nSize, byte[] nBuffer)
     {
+        emptyTransactionFlag = true;
+        if(nBuffer.length > 0)
+        {
+            emptyTransactionFlag = false;
+        }
         size = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(nSize).array();
         buffer = nBuffer;
-        id = -1;
+        messageId = -1;
         timestamp = 0;
     }
 
@@ -30,19 +41,34 @@ class VdmsTransaction
     	return size;
     }
 
+    public Boolean GetEmptyTransactionFlag()
+    {
+        return emptyTransactionFlag;
+    }
+
     public byte[] GetBuffer()
     {
 	    return buffer;
     }
 
-    public int GetId()
+    public int GetMessageId()
     {
-        return id;
+        return messageId;
     }
 
-    public void SetId(int nId)
+    public void SetMessageId(int nId)
     {
-        id = nId;
+        messageId = nId;
+    }
+
+    public void SetThreadId(int nId)
+    {
+        threadId = nId;
+    }
+
+    public int GetThreadId()
+    {
+        return threadId;
     }
 
     public long GetTimestamp()

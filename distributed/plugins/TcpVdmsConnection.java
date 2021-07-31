@@ -81,7 +81,8 @@ class TcpVdmsConnection extends VdmsConnection
         Write(outMessage);
         try
         {
-            out.write(ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(outMessage.GetId()).array());
+            out.writeInt(outMessage.GetMessageId());
+            out.writeInt(outMessage.GetThreadId());
         }
         catch(IOException e)
         {
@@ -128,11 +129,14 @@ class TcpVdmsConnection extends VdmsConnection
         VdmsTransaction readValue = Read();
         try
         {
-            int nId;
+            byte[] messageIdBuffer = new byte[4];
+            in.read(messageIdBuffer, 0, 4);
+            int nMessageId = ByteBuffer.wrap(messageIdBuffer).order(ByteOrder.BIG_ENDIAN).getInt();
             byte[] threadIdBuffer = new byte[4];
             in.read(threadIdBuffer, 0, 4);
-            nId = ByteBuffer.wrap(threadIdBuffer).order(ByteOrder.LITTLE_ENDIAN).getInt();
-            readValue.SetId(nId);
+            int nThreadId = ByteBuffer.wrap(threadIdBuffer).order(ByteOrder.BIG_ENDIAN).getInt();
+            readValue.SetMessageId(nMessageId);
+            readValue.SetThreadId(nThreadId);
         }
         catch(IOException e)
         {
@@ -140,6 +144,7 @@ class TcpVdmsConnection extends VdmsConnection
             System.exit(-1);
             
         }
+
         return readValue;
     }
     

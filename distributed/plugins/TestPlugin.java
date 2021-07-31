@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 
 import java.lang.System;
@@ -25,14 +26,15 @@ public class TestPlugin extends Plugin
         {
             Path configFilePath = Paths.get(configFileName);
             String configData = Files.readString(configFilePath);
+            String configFileDirectory = configFilePath.getParent().toString();
             JSONParser configParser = new JSONParser();
             
             JSONObject config = (JSONObject) configParser.parse(configData);
             String sourceConfigFileName = (String) config.get("source_config_file");
-            AddPublishersFromFile(sourceConfigFileName);
+            AddPublishersFromFile(configFileDirectory + File.separator + sourceConfigFileName);
             
             String destinationConfigFileName = (String) config.get("destination_config_file");
-            AddSubscribersFromFile(destinationConfigFileName);
+            AddSubscribersFromFile(configFileDirectory + File.separator + destinationConfigFileName);
         }  
         catch(ParseException e)
         {
@@ -49,7 +51,7 @@ public class TestPlugin extends Plugin
     
     public static void main (String[] args)
     {
-        new TestPlugin("debug/replication_plugin_config.json");
+        new TestPlugin(args[0]);
     }
     
 }

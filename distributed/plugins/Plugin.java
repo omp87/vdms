@@ -130,18 +130,18 @@ public class Plugin
         try
         {
             //For now check to see how many
-            outgoingMessageBuffer[message.GetId() % outgoingMessageRegistrySize].add(message);
+            outgoingMessageBuffer[message.GetMessageId() % outgoingMessageRegistrySize].add(message);
             //If this is the first message recived for this outgoing message then send it back as the response
-            if(outgoingMessageBuffer[message.GetId() % outgoingMessageRegistrySize].size() == 1)
+            if(outgoingMessageBuffer[message.GetMessageId() % outgoingMessageRegistrySize].size() == 1)
             {
                 publisherDataQueue.put(message);
             }
             
             //we remove messages that are index - 1/2 (buffer size) for MessageBuffer and the MessageRegistry
-            if(message.GetId() - (int) (outgoingMessageRegistrySize / 2) >=0 )
+            if(message.GetMessageId() - (int) (outgoingMessageRegistrySize / 2) >=0 )
             {
-                outgoingMessageBuffer[(message.GetId() - (int) (outgoingMessageRegistrySize / 2))%outgoingMessageRegistrySize].clear();
-                outgoingMessageRegistry[(message.GetId() - (int) (outgoingMessageRegistrySize / 2))%outgoingMessageRegistrySize].clear();
+                outgoingMessageBuffer[(message.GetMessageId() - (int) (outgoingMessageRegistrySize / 2))%outgoingMessageRegistrySize].clear();
+                outgoingMessageRegistry[(message.GetMessageId() - (int) (outgoingMessageRegistrySize / 2))%outgoingMessageRegistrySize].clear();
             }
         }
         catch(InterruptedException e)
@@ -155,7 +155,7 @@ public class Plugin
     {
         try
         {
-            message.SetId(newMessageId);
+            message.SetMessageId(newMessageId);
             message.SetTimestamp(System.currentTimeMillis());
             newMessageId++;
             subscriberDataQueue.put(message);

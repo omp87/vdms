@@ -9,7 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
+import java.nio.charset.StandardCharsets;
 
 
 class ClientServiceThread extends Thread
@@ -64,6 +64,7 @@ class ClientServiceThread extends Thread
         int bytesRead;
         int readSize;
         int returnedThreadId;
+        int returnedMessageId;
         VdmsTransaction returnedMessage;
         VdmsTransaction newTransaction;
         
@@ -110,7 +111,9 @@ class ClientServiceThread extends Thread
                 if(type == 0)
                 {
                     //if type is producer - put the data in out queue and then wait for data in the in queue                    
-                    newTransaction = new VdmsTransaction(readSizeArray, buffer, id);
+                    newTransaction = new VdmsTransaction(readSizeArray, buffer, id, messageId);
+                    String tmpString = new String(buffer, StandardCharsets.UTF_8);
+                    System.out.println(tmpString);
                     manager.AddToConsumerQueue(newTransaction);
                     returnedMessage = responseQueue.take();
                     out.write(returnedMessage.GetSize());
@@ -125,14 +128,19 @@ class ClientServiceThread extends Thread
                     if(messageId > 0)
                     {
                         bytesRead = in.read(threadIdArray, 0, 4);
-                        returnedThreadId =  ByteBuffer.wrap(threadIdArray).order(ByteOrder.LITTLE_ENDIAN).getInt();
-                        newTransaction = new VdmsTransaction(readSizeArray, buffer, returnedThreadId);
+                        returnedMessageId =  ByteBuffer.wrap(threadIdArray).order(ByteOrder.BIG_ENDIAN).getInt();
+                        bytesRead = in.read(threadIdArray, 0, 4);
+                        returnedThreadId =  ByteBuffer.wrap(threadIdArray).order(ByteOrder.BIG_ENDIAN).getInt();
+                        String tmpString = new String(buffer, StandardCharsets.UTF_8);
+                        System.out.println(tmpString);
+                        newTransaction = new VdmsTransaction(readSizeArray, buffer, returnedThreadId, returnedMessageId);
                         manager.AddToProducerQueue(newTransaction);
                     }
                     returnedMessage = responseQueue.take();
                     out.write(returnedMessage.GetSize());
                     out.write(returnedMessage.GetBuffer());
-                    out.write(returnedMessage.GetThreadId());
+                    out.writeInt(returnedMessage.GetMessageId());
+                    out.writeInt(returnedMessage.GetThreadId());
                     ++messageId;
                 }
                 

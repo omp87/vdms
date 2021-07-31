@@ -1,3 +1,4 @@
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -127,7 +128,7 @@ class SubscriberServiceThread extends Thread
                 if(threadInitFlag == false)
                 {
                     //only write the value if there is a valid init sequence
-                    if(connection.GetInitSequence() != null)
+                    if(!connection.GetInitSequence().GetEmptyTransactionFlag())
                     {
                         connection.WriteInitMessage();
                     }
@@ -136,12 +137,15 @@ class SubscriberServiceThread extends Thread
                 
                 returnedMessage = responseQueue.take();
                 //need to check to see if there is a message id - needs to have message id here for pass back up
-                manager.AddOutgoingMessageRegistry(returnedMessage.GetId(), id);
+                String tmpString = new String(returnedMessage.GetBuffer(), StandardCharsets.UTF_8);
+                System.out.println(tmpString);
+                manager.AddOutgoingMessageRegistry(returnedMessage.GetMessageId(), id);
                 connection.Write(returnedMessage);
                 ++messageId;
                 
                 newTransaction = connection.Read();
-                newTransaction.SetId(returnedMessage.GetId());
+                newTransaction.SetMessageId(returnedMessage.GetMessageId());
+                newTransaction.SetThreadId(returnedMessage.GetThreadId());
                 newTransaction.SetTimestamp(System.currentTimeMillis() - returnedMessage.GetTimestamp());
                 manager.AddToProducerQueue(newTransaction);
             }

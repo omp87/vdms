@@ -8,12 +8,12 @@ class VdmsTransaction
     int messageId;
     int threadId;
 
-    public VdmsTransaction(byte[] nSize, byte nBuffer[], int nThreadId)
+    public VdmsTransaction(byte[] nSize, byte nBuffer[], int nThreadId, int nMessageId)
     {
         size = nSize;
         buffer = nBuffer;
         threadId = nThreadId;
-        messageId = -1;
+        messageId = nMessageId;
     }
 
     public byte[] GetSize()

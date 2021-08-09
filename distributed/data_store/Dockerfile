@@ -100,14 +100,6 @@ rm -rf grpc && rm -rf libpng  && rm -rf opencv && rm -rf swig && rm -rf CMake \
 RUN echo '#!/bin/bash' > /start.sh && echo 'cd /vdms/build' >> /start.sh && \
 echo './vdms' >> /start.sh && chmod 755 /start.sh
 
-
 COPY ./config_vdms.py /vdms/build
-
-RUN echo '#!/bin/bash' > /start.sh && \
-    echo 'cd /vdms/build'   >> /start.sh && \
-    echo 'cp ../config-vdms.json ./'   >> /start.sh && \
-    echo 'python3 config_vdms.py'   >> /start.sh && \
-    echo './vdms'       >> /start.sh && \
-    chmod 755 /start.sh
 
 CMD ["/start.sh"]

@@ -138,7 +138,7 @@ class SubscriberServiceThread extends Thread
                 returnedMessage = responseQueue.take();
                 //need to check to see if there is a message id - needs to have message id here for pass back up
                 String tmpString = new String(returnedMessage.GetBuffer(), StandardCharsets.UTF_8);
-                System.out.println(tmpString);
+                //System.out.println(tmpString);
                 manager.AddOutgoingMessageRegistry(returnedMessage.GetMessageId(), id);
                 connection.Write(returnedMessage);
                 ++messageId;

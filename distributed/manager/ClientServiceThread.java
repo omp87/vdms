@@ -115,7 +115,7 @@ class ClientServiceThread extends Thread
                     //if type is producer - put the data in out queue and then wait for data in the in queue                    
                     newTransaction = new VdmsTransaction(readSizeArray, buffer, id, messageId);
                     String tmpString = new String(buffer, StandardCharsets.UTF_8);
-                    System.out.println(tmpString);
+                    //System.out.println(tmpString);
                     manager.AddToConsumerQueue(newTransaction);
                     returnedMessage = responseQueue.take();
                     out.write(returnedMessage.GetSize());
@@ -131,9 +131,9 @@ class ClientServiceThread extends Thread
                     {
                         returnedMessageId =  in.readInt();
                         returnedThreadId =  in.readInt();
-                        System.out.println(returnedThreadId); //debugging does not work unless this line is present
+                        //System.out.println(returnedThreadId); //debugging does not work unless this line is present
                         String tmpString = new String(buffer, StandardCharsets.UTF_8);
-                        System.out.println(tmpString);
+                        //System.out.println(tmpString);
                         newTransaction = new VdmsTransaction(readSizeArray, buffer, returnedThreadId, returnedMessageId);
                         manager.AddToProducerQueue(newTransaction);
                     }

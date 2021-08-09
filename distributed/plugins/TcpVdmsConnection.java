@@ -109,7 +109,7 @@ class TcpVdmsConnection extends VdmsConnection
             int totalReadSize = 0;
             while(totalReadSize < readSize)
             {
-                int actualReadSize = in.read(buffer, 0, readSize-totalReadSize);
+                int actualReadSize = in.read(buffer, totalReadSize, readSize-totalReadSize);
                 totalReadSize += actualReadSize;
             }
             readValue = new VdmsTransaction(readSizeArray, buffer);

@@ -23,6 +23,7 @@ output_environment_workers = ""
 for this_data_store in data_stores:
     output_data_store = {}
     output_data_store["container_name"] = "\'" + this_data_store["name"] + "\'"
+    output_data_store["hostname"] = "\'" + this_data_store["name"] + "\'"
     output_data_store_ports = []
     output_data_store_ports.append( "\'" + str(this_data_store["port"]) + ":" + str(this_data_store["port"]) + "\'")
     output_data_store["ports"] = output_data_store_ports
@@ -39,6 +40,7 @@ for this_data_store in data_stores:
 
 output_manager = {}
 output_manager["container_name"] = "\'" + manager["name"] + "\'"
+output_manager["hostname"] = "\'" + manager["name"] + "\'"
 output_manager_ports = []
 output_manager_ports.append( "\'" + str(manager["port"]) + ":" + str(manager["port"]) + "\'")
 output_manager["ports"] = output_manager_ports
@@ -75,6 +77,7 @@ for this_worker in workers:
         
     output_worker["depends_on"] = output_worker_depends_on
     output_worker["container_name"] = "\'" + this_worker["name"] + "\'"
+    output_worker["hostname"] = "\'" + this_worker["name"] + "\'"
     
     output_worker_build = {}
     output_worker_build["context"] = "\'plugins\'"

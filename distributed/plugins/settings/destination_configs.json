@@ -1,0 +1,20 @@
+[
+    {
+        "RegistrationId" : 1, 
+        "Priority" : 1,
+        "FunctionId" : 1,
+        "HostName" : "localhost",
+        "HostPort" : 55560,
+        "InitBytes" : "",
+        "InitBytesMultiplier": 1
+    },    
+    {
+        "RegistrationId" : 1, 
+        "Priority" : 1,
+        "FunctionId" : 1,
+        "HostName" : "localhost",
+        "HostPort" : 55561,
+        "InitBytes" : "",
+        "InitBytesMultiplier": 1
+    }
+]

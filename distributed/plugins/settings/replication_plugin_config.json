@@ -1,0 +1,4 @@
+{
+    "source_config_file" : "source_configs.json",
+    "destination_config_file" : "destination_configs.json"
+}

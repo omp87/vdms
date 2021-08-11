@@ -4,7 +4,7 @@
         "RegistrationId" : 1, 
         "Priority" : 1,
         "FunctionId" : 1,
-        "HostName" : "localhost",
+        "HostName" : "manager",
         "HostPort" : 55550,
         "InitBytes" : "00000004",
         "InitBytesMultiplier": -1

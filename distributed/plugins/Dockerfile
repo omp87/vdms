@@ -13,5 +13,5 @@ RUN cd / && curl https://storage.googleapis.com/google-code-archive-downloads/v2
 RUN cd / && git clone https://github.com/omp87/vdms.git && cd vdms && git checkout distributed_vdms && cd distributed/plugins && mkdir build && cd build && cmake .. && make -j16 
 
 WORKDIR /vdms/distributed/plugins/build
-ENTRYPOINT ["java", "-cp", "TestPlugin.jar:/usr/share/java/protobuf.jar:/usr/share/java/commons-codec-1.15.jar:/usr/share/java/json-simple-1.1.1.jar", "TestPlugin", "settings/replication_plugin_config.json"]
+ENTRYPOINT ["java", "-cp", "TestPlugin.jar:/usr/share/java/protobuf.jar:/usr/share/java/commons-codec-1.15.jar:/usr/share/java/json-simple-1.1.1.jar", "TestPlugin", "../settings/replication_plugin_config.json"]
 #ENTRYPOINT ["tail", "-f"]

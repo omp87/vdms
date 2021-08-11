@@ -15,7 +15,7 @@ data_stores = config["data_stores"]
 workers = config["workers"]
 
 output = OrderedDict()
-output["version"] = "\'2.0\'"
+output["version"] = "\'3.0\'"
 services = {}
 
 output_environment_workers = ""

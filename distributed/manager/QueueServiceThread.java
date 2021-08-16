@@ -25,7 +25,6 @@ class QueueServiceThread extends Thread
       matchType = nMatchType;
    }
    
-   
    /**
    * control loop that handles the control of the QueueServiceThread. This funcion continuously waits for a new message and then determines the appropriate destination for an arriving message. Currently all messages are forwarded to all consumers. Messages are only returned to the producer matching one Id (the originating id of the database transaction.)
    */

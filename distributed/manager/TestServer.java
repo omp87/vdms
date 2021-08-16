@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
 
+/**
+* Server class that conatins the main function. This application is capable of handing producers that generate VDMS queries and consumers that take further process the data and eventually store the data into a data store. Currently both producers and consumers connect to the same port. A consumer is aware that this server is not a true VDMS server and will send 4 bytes to inform the server it is a consumer. A producer will send data as if this server is a normal VDMS server. Once the connection is initialized all dat acoming from a producer is directed to all of the consumers. When a response comes back from the producer, the response is then sent back to the originating producer.
+*/
+
 public class TestServer 
 {
     ServerSocket myServerSocket;
@@ -25,6 +29,9 @@ public class TestServer
     private List<ClientServiceThread> consumerList; /**< array with all of the consumers of data leaving from the server -generrally a plugin that directs data to a data store*/
     boolean ServerOn; /**< flag indicating whether the server is initialized */
     
+       /**
+   * constructor to create a TestServer object. This constructor needsno parameters becasue the NETWORK_PORT variable is pulled from the environment variables. When a client connects to the server, a ClientServiceThread is created that can handle both consumers and producers that connect.
+   */
     public TestServer() { 
         //Create a queue for each direction 
         threadTypeArray = new ArrayList();
@@ -93,15 +100,6 @@ public class TestServer
     
     public void SetThreadType(int threadId, int threadType )
     {
-        if(threadType == 0)
-        {
-            
-        }
-        else
-        {
-            
-        }
-        
         threadTypeArray.set(threadId, threadType);
     }
     
@@ -167,6 +165,5 @@ public class TestServer
     {
         new TestServer();
     }
-    
 }
 

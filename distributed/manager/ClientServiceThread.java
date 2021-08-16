@@ -9,6 +9,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
+/**
+* A thread class that handles connections from clients. For each client connected to a server, a thread of this type is created that is responsible for handling reeading and writing. A server must handle producers (clients that generate database transactions) and consumers (plugins such as data stores that receive data)
+*/
 class ClientServiceThread extends Thread
 { 
     Socket myClientSocket; /**< socket of the incoming connection from a client */

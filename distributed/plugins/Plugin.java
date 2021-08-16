@@ -16,24 +16,18 @@ import org.json.simple.parser.ParseException;
 
 public class Plugin
 {
-    protected BlockingQueue<VdmsTransaction> publisherDataQueue;
-    protected BlockingQueue<VdmsTransaction> subscriberDataQueue;
-    protected QueueServiceThread publisherService;
-    protected QueueServiceThread  subscriberService;
-    protected List<PublisherServiceThread> publisherList;
-    protected List<SubscriberServiceThread> subscriberList;
-    protected int threadId;
-    protected int newMessageId;
-    protected int outgoingMessageRegistrySize;
-    protected ArrayList<Integer>[] outgoingMessageRegistry;
-    protected ArrayList<VdmsTransaction>[] outgoingMessageBuffer;
-    protected ArrayList<PassList> allFilterFields; /**<  ArrayList holding all of the PassLists that have been created */
-    
-    /*
-    threadId keeps track of tne nid of the next thread that needs to be created
-    This is an id that can be used to identify the connection that is associated with a connection
-    
-    */
+    protected BlockingQueue<VdmsTransaction> publisherDataQueue; /**< BlockingQue of vdms transactions that should be transmitted to producers */
+    protected BlockingQueue<VdmsTransaction> subscriberDataQueue; /**< BlockingQue of vdms transactions that should be transmitted to subscribers / consumers */
+    protected QueueServiceThread publisherService; /**<  thread for handling producers producers. This thread is responsible for taking data from the publisherDataQueue and sending this data to the producers. It also takes data from client and puts it into the subscriberDataQueue */
+    protected QueueServiceThread  subscriberService; /**<  thread for handling producers consumer. This thread is responsible for taking data from the subscriberDataQueue and sending this data to the producers. It also takes data from client and puts it into the publisherDataQueue */
+    protected List<PublisherServiceThread> publisherList; /**< list of threads that produce data that should be directed to consumers */
+    protected List<SubscriberServiceThread> subscriberList; /**< list of threads that will receive data from producers */
+    protected int threadId; /**<  keeps track of tne nid of the next thread that needs to be created. This is an id that can be used to identify the connection that is associated with a connection */
+    protected int newMessageId; /**< message id of the next message to be created. Ths is used to keep track of what messages have received a response */
+    protected ArrayList<Integer>[] outgoingMessageRegistry; /**< this structure registers whether a repsonse has been provided for each message. This prevents multiple consumer threads from responding to a database transaction from a produer. We use a circular buffer to keep track of these responses*/
+    protected int outgoingMessageRegistrySize; /**< size  of the circular buffer OutgoingMessageRegistry */
+    protected ArrayList<VdmsTransaction>[] outgoingMessageBuffer; /**<  buffer of messages that should be transmitted back to a producer. This buffer can be used to compare responses returning to ensure they match*/
+    protected ArrayList<PassList> allFilterFields; /**<  ArrayList holding all of the PassLists that have been created. This is only neeed when we are perfoming filtering and not needed when performing replication*/
     
     public Plugin()
     {
@@ -45,12 +39,10 @@ public class Plugin
         subscriberService = new QueueServiceThread(subscriberDataQueue, this, 0);
         subscriberService.start();
         allFilterFields = null;
-        
         publisherList = new ArrayList<PublisherServiceThread>();
         subscriberList = new ArrayList<SubscriberServiceThread>();
         threadId = 0;
         newMessageId = 0;
-        
         //initialize the outgoign queue registry that stores information abou tmessages that have been sent
         outgoingMessageRegistrySize = 256;
         outgoingMessageRegistry = (ArrayList<Integer>[]) new ArrayList[outgoingMessageRegistrySize];
@@ -60,10 +52,7 @@ public class Plugin
             outgoingMessageRegistry[i] = new ArrayList<Integer>();
             outgoingMessageBuffer[i] = new ArrayList<VdmsTransaction>();
         }
-        
     }
-    
-    
     
     public void AddPublishersFromFile(String fileName)
     {
@@ -119,9 +108,15 @@ public class Plugin
             e.printStackTrace();
             System.exit(-1);
         }
-    }
+    }    
     
     
+    /**
+    * function to send data back to the producer. If we are doing replication, this function must ensure that multiple reponses for the same message are not returned to the producer. This is doen using a message registry - a circular buffer that documents when a message is sent to a consumer and prevents further responses for the same message.
+    * @param message - this is the response from a consumer that should be sent to a producer
+    * @see AddToConsumerQueue()
+    * @return void()
+    */
     public void AddToProducerQueue(VdmsTransaction message )
     {
         try
@@ -203,6 +198,7 @@ public class Plugin
         }
     }
     
+    //function is used when filtering data to different consumers but not for replication
     protected void LoadFilterFields(String filterConfigFileName)
     {
         try
@@ -217,7 +213,6 @@ public class Plugin
                 PassList tmpPassList = new PassList(config.get(i).toString());
                 allFilterFields.add(tmpPassList);
             }
-            
         }
         catch(IOException e)
         {
@@ -230,5 +225,5 @@ public class Plugin
             System.exit(-1);
         }
     } 
-        
+    
 }

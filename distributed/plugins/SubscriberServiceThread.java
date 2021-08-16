@@ -2,10 +2,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
-
 import VDMS.protobufs.QueryMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
-
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -13,16 +11,16 @@ import org.json.simple.parser.ParseException;
 
 class SubscriberServiceThread extends Thread
 {
-    boolean m_bRunThread = true;
-    int id;
-    int type;
-    int messageId;
-    int passListId;
-    Plugin manager;
-    BlockingQueue<VdmsTransaction> responseQueue;
-    VdmsTransaction initSequence;
-    PassList passList;
-    VdmsConnection connection;
+    VdmsConnection connection; /**< VDMS connection that includes socket and additional socket information */ 
+    boolean m_bRunThread = true; /**< flag that keeps the thread inside a while loop while it is running  */ 
+    int id; /**< thread id assigigned when all threads are created */ 
+    int type; /**< flag indicating whether this thread is a consumer or producer */ 
+    int messageId; /**< messageId  indicating how many messages have come through this consumer*/ 
+    int passListId; /**<  list of messages that can be forwaded to this consumer */ 
+    Plugin manager; /**< manager that is the source for data */ 
+    BlockingQueue<VdmsTransaction> responseQueue; /**< qeuee holding newly arrived data that should be sent to consumers */ 
+    VdmsTransaction initSequence; /**< sequence to be sent to manager to indicate plugin type */ 
+    PassList passList; /**< list of types of messages that should be communicated to consumers  */ 
     
     public SubscriberServiceThread()
     { 
@@ -68,26 +66,21 @@ class SubscriberServiceThread extends Thread
         {
             responseQueue.add(newMessage);
         }
-        else
+        else // perform this task if message filtering is enabled - filtering data between two consumers
         {
             try
             {
                 /// \todo need to add a switch statement based on the query type
                 /// enum 0 is match the field type // enum 1 is match the autoquery id
-
-
                 QueryMessage.queryMessage newTmpMessage = QueryMessage.queryMessage.parseFrom(newMessage.GetBuffer());
                 JSONParser jsonString = new JSONParser();
                 JSONArray jsonArray = (JSONArray) jsonString.parse(newTmpMessage.getJson());
                 JSONObject jsonObject = (JSONObject) jsonArray.get(0);
-                
                 //Iterate through the keys in this message and check against the keys that should be published to this node
                 for (Object key : jsonObject.keySet()) 
                 {
                     for(int i = 0; i < passList.GetCriteriaSize(); i++)
                     {
-
-
                         String checkString = passList.GetCriteriaValue(i);
                         if(checkString.equals(key))
                         {
@@ -95,13 +88,11 @@ class SubscriberServiceThread extends Thread
                         }
                     }
                     System.out.println(key.toString());
-                }
-                
+                }                
                 if(passMessage)
                 {
                     responseQueue.add(newMessage);
                 }
-                
             }
             catch(InvalidProtocolBufferException e)
             {
@@ -112,7 +103,6 @@ class SubscriberServiceThread extends Thread
                 System.exit(-1);
             }
         }
-        
     }
     
     public void run() 
@@ -142,7 +132,6 @@ class SubscriberServiceThread extends Thread
                 manager.AddOutgoingMessageRegistry(returnedMessage.GetMessageId(), id);
                 connection.Write(returnedMessage);
                 ++messageId;
-                
                 newTransaction = connection.Read();
                 newTransaction.SetMessageId(returnedMessage.GetMessageId());
                 newTransaction.SetThreadId(returnedMessage.GetThreadId());

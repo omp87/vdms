@@ -3,15 +3,15 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 class PublisherServiceThread extends Thread
 { 
-    protected VdmsConnection connection;
-    protected boolean m_bRunThread = true;
-    protected int id;
-    protected int type;
-    protected int messageId;
-    protected Plugin manager;
-    protected BlockingQueue<VdmsTransaction> responseQueue;
-    protected VdmsTransaction initSequence;
-    
+    protected VdmsConnection connection; /**< VDMS connection that includes socket and additional socket information */
+    protected boolean m_bRunThread = true; /**< flag that keeps the thread inside a while loop while it is running  */ 
+    protected int id; /**< thread id assigigned when all threads are created */ 
+    protected int type; /**< flag indicating whether this thread is a consumer or producer */ 
+    protected int messageId; /**< messageId  indicating how many messages have come through this consumer*/ 
+    protected Plugin manager; /**< manager that is the source for data */ 
+    protected BlockingQueue<VdmsTransaction> responseQueue; /**< qeuee holding newly arrived data that should be sent to consumers */ 
+    protected VdmsTransaction initSequence; /**< sequence to be sent to manager to indicate plugin type */ 
+   
     /**
     * A constructor for a thread to handle incoming connections from clients. This empty constructor is only used when the object is initialized after it is created 
     */

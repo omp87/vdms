@@ -1,16 +1,12 @@
 import java.io.File;
 import java.io.IOException;
-
 import java.lang.System;
-
 import java.net.Socket;
 import java.net.UnknownHostException;
-
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.JSONArray;
@@ -19,7 +15,6 @@ import org.json.simple.parser.ParseException;
 
 public class TestPlugin extends Plugin
 {
-    
     public TestPlugin(String configFileName)
     {
         try
@@ -28,11 +23,9 @@ public class TestPlugin extends Plugin
             String configData = Files.readString(configFilePath);
             String configFileDirectory = configFilePath.getParent().toString();
             JSONParser configParser = new JSONParser();
-            
             JSONObject config = (JSONObject) configParser.parse(configData);
             String sourceConfigFileName = (String) config.get("source_config_file");
             AddPublishersFromFile(configFileDirectory + File.separator + sourceConfigFileName);
-            
             String destinationConfigFileName = (String) config.get("destination_config_file");
             AddSubscribersFromFile(configFileDirectory + File.separator + destinationConfigFileName);
         }  

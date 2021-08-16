@@ -1,14 +1,10 @@
 import java.io.IOException;
-
 import java.lang.System;
-
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
-
 import java.util.concurrent.BlockingQueue;
-
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.Calendar;
 import java.util.List;
@@ -18,20 +14,16 @@ import java.util.ArrayList;
 public class TestServer 
 {
     ServerSocket myServerSocket;
-    private final BlockingQueue<VdmsTransaction> producerDataQueue;
-    private final BlockingQueue<VdmsTransaction> consumerDataQueue;
-    private QueueServiceThread producerService;
-    private QueueServiceThread  consumerService;
-    List<Integer> threadTypeArray;
-    List<ClientServiceThread> threadArray;
-    int newThreadId;
-    
-    private List<ClientServiceThread> producerList;
-    private List<ClientServiceThread> consumerList;
-    
-    
-    boolean ServerOn;
-    
+    private final BlockingQueue<VdmsTransaction> producerDataQueue; /**< data queue holding maessage from a producer to go to a consumer (data store) */
+    private final BlockingQueue<VdmsTransaction> consumerDataQueue; /**< data queue holding maessage from a consumer to go to a producer (client ingesting data) */
+    private QueueServiceThread producerService;  /**< service thread to handle consumer connections*/
+    private QueueServiceThread  consumerService;  /**< service thread to handle producer connection*/
+    List<Integer> threadTypeArray;  /**< array with the flag of whether each thread is a producer or consumer */
+    List<ClientServiceThread> threadArray;  /**< array of pointers to threads */
+    int newThreadId;  /**< Id for the next thread to be created */
+    private List<ClientServiceThread> producerList;  /**< array with all of the producers of data coming into server  - generally client */
+    private List<ClientServiceThread> consumerList; /**< array with all of the consumers of data leaving from the server -generrally a plugin that directs data to a data store*/
+    boolean ServerOn; /**< flag indicating whether the server is initialized */
     
     public TestServer() { 
         //Create a queue for each direction 
@@ -44,7 +36,6 @@ public class TestServer
         consumerService.start();
         threadArray = new ArrayList();
         newThreadId = 0;
-        
         producerList = new ArrayList();
         consumerList = new ArrayList();
         
@@ -161,18 +152,17 @@ public class TestServer
     {      
         return producerList;
     }
+
     public List<Integer> GetThreadTypeArray()
     {
         return threadTypeArray;
     }
     
-    
     public List<ClientServiceThread> GetThreadArray()
     { 
         return threadArray;
     }
-    
-    
+
     public static void main (String[] args)
     {
         new TestServer();

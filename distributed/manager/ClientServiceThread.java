@@ -1,9 +1,7 @@
 import java.io.IOException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-
 import java.net.Socket;
-
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -11,24 +9,31 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
-
 class ClientServiceThread extends Thread
 { 
-    Socket myClientSocket;
-    boolean m_bRunThread = true;
-    int id;
-    int type;
-    int messageId;
-    TestServer manager;
-    BlockingQueue<VdmsTransaction> responseQueue;
+    Socket myClientSocket; /**< socket of the incoming connection from a client */
+    boolean m_bRunThread = true; /**< Boolean flag indicating whether the current thread is valid */
+    int id; /**< id of the thread assigned - this is not the same as the ThreadId automatically assigned by the application */
+    int type; /**< Flag indicating whether this thread is a producer or a consumer */
+    int messageId; /**< id of the message that is being created */
+    TestServer manager; /**< pointer to the manager or producer */
+    BlockingQueue<VdmsTransaction> responseQueue; /**< queue from which this thread should take data that should be sent to the appropriate location */
     
-    
+    /**
+    * A constructor for a thread to handle incoming connections from clients. This empty constructor is only used when the object is initialized after it is created 
+    */
     public ClientServiceThread()
     { 
         super();
         responseQueue = null;
     } 
     
+    /**
+    * a constructor that creates a thread to handle incoming connections from clients
+    * @param nManager pointer to the manager that is handling the incoming manager
+    * @param s socket that connectes the  client and the server
+    * @param nThreadId Id of the thread - this value is assigned by application code and not the automatic id created by OS
+    */
     ClientServiceThread(TestServer nManager, Socket s, int nThreadId) 
     {
         responseQueue = new ArrayBlockingQueue<VdmsTransaction>(128);
@@ -39,21 +44,37 @@ class ClientServiceThread extends Thread
         messageId = 0;
     } 
     
+    /**
+    * get flag indicating whether this thread corresponds with a consumer (manager) or producer (client)
+    * @return Integer where 0 indicates this is a producer and 1 indicates this is a consumer
+    */
     public int GetType()
     {
         return type;
     }
     
+    /**
+    * get the thread id of the thread
+    * @return Integer coresponding with the thread 
+    */
     public int GetId()
     {
         return id;
     }
     
-    public void Publish(VdmsTransaction newMessage)
+    /**
+    * publish message to appropriate recipients
+    * @param nMessage message that should be passed to connecting socket
+    * @return void()
+    */
+    public void Publish(VdmsTransaction nMessage)
     {
-        responseQueue.add(newMessage);
+        responseQueue.add(nMessage);
     }
     
+    /**
+    * a loop to handle the client connections. This function is repsonsible for handling connections for both producers (managers) and consumers (clients). This function will wait for a message in the service queue. Once that message arrives, it will be placed into the appropriate queue and then published to the proper recipients.
+    */
     public void run() 
     { 
         DataInputStream in = null; 
@@ -61,9 +82,7 @@ class ClientServiceThread extends Thread
         byte[] readSizeArray = new byte[4];
         byte[] messageIdArray = new byte[4];
         byte[] threadIdArray = new byte[4];
-        
         int bytesRead;
-        int foo;
         int readSize;
         int returnedThreadId;
         int returnedMessageId;
@@ -137,6 +156,7 @@ class ClientServiceThread extends Thread
                         newTransaction = new VdmsTransaction(readSizeArray, buffer, returnedThreadId, returnedMessageId);
                         manager.AddToProducerQueue(newTransaction);
                     }
+                    //Data is sent to plugin. In addition to the basic VDMS transaction, also additional data for performance measurements
                     returnedMessage = responseQueue.take();
                     out.write(returnedMessage.GetSize());
                     out.write(returnedMessage.GetBuffer());

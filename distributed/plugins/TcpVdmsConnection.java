@@ -8,10 +8,16 @@ import java.nio.ByteOrder;
 
 class TcpVdmsConnection extends VdmsConnection 
 {
-    Socket socket;
-    DataInputStream in;
-    DataOutputStream out;
+    Socket socket; /**< socket to use to communicate  */  
+    DataInputStream in; /**< input data stream connecting to socket */  
+    DataOutputStream out; /**< output data stream connecting to socket */  
     
+    /**
+    * constructor to create a structure with a TCP connection and the input/output streams
+    * @param initString string containing jsaon values that contains information needed to initialize the TCP connection
+    * @see publicVar()
+    * @return new TcpVdmsConnection
+    */
     public TcpVdmsConnection(String initString)
     {
         super(initString);
@@ -32,7 +38,11 @@ class TcpVdmsConnection extends VdmsConnection
             System.exit(-1);
         }
     }
-
+    /**
+    * function that closes the tcp connection and terminates the input and output data streams
+    * @see TcpVdmsConnection()
+    * @return void()
+    */    
     public void Close()
     {
         try 
@@ -91,6 +101,8 @@ class TcpVdmsConnection extends VdmsConnection
             System.exit(-1);
         } 
     }
+
+    
     
     public VdmsTransaction Read()
     {
@@ -113,9 +125,7 @@ class TcpVdmsConnection extends VdmsConnection
                 totalReadSize += actualReadSize;
             }
             readValue = new VdmsTransaction(readSizeArray, buffer);
-            
         }
-        
         catch(IOException e)
         {
             e.printStackTrace();
@@ -125,6 +135,11 @@ class TcpVdmsConnection extends VdmsConnection
         return readValue;
     }
     
+    /**
+    * read the a VDMS transaction in addition to extended information related to database transaction performance
+    * @see Read()
+    * @return VdmsTransaction - an extened VDMS Transaction that includes the basic message in addition to the the extended information
+    */
     public VdmsTransaction ReadExtended()
     {  
         VdmsTransaction readValue = Read();
@@ -140,13 +155,8 @@ class TcpVdmsConnection extends VdmsConnection
         {
             e.printStackTrace();
             System.exit(-1);
-            
         }
-
         return readValue;
     }
-    
-    
-    
 }
 
